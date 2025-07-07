@@ -129,8 +129,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   String? selectedReadSurah;
   String? selectedMemorizeSurah;
+
   final TextEditingController readPageFrom = TextEditingController();
+  final TextEditingController readPageTo = TextEditingController();
   final TextEditingController memorizeAyahFrom = TextEditingController();
+  final TextEditingController memorizeAyahTo = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -139,50 +142,77 @@ class _TrackingScreenState extends State<TrackingScreen> {
     selectedReadSurah ??= surahNames.contains(viewModel.readSurahName)
         ? viewModel.readSurahName
         : surahNames.first;
-
     selectedMemorizeSurah ??= surahNames.contains(viewModel.memorizeSurahName)
         ? viewModel.memorizeSurahName
         : surahNames.first;
 
-    readPageFrom.text = viewModel.currentReadPage.toString();
-    memorizeAyahFrom.text = viewModel.currentMemorizedAyah.toString();
+    readPageFrom.text = viewModel.startReadPage.toString();
+    readPageTo.text = viewModel.targetReadPage.toString();
+    memorizeAyahFrom.text = viewModel.startMemorizedAyah.toString();
+    memorizeAyahTo.text = viewModel.targetMemorizedAyah.toString();
 
     return Scaffold(
       appBar: AppBar(title: const Text('تتبع التقدم'), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSection(
+          _buildTrackingSection(
             title: 'القراءة',
             surahValue: selectedReadSurah!,
             onSurahChanged: (val) => setState(() => selectedReadSurah = val),
             surahList: surahNames,
-            numberController: readPageFrom,
-            numberLabel: 'من الصفحة',
+            fromController: readPageFrom,
+            toController: readPageTo,
+            fromLabel: 'من الصفحة',
+            toLabel: 'إلى الصفحة',
             onSave: () {
-              final page = int.tryParse(readPageFrom.text) ?? 1;
-              viewModel.updateReadPage(page);
-              viewModel.updateReadSurah(selectedReadSurah!);
+              final fromPage = int.tryParse(readPageFrom.text) ?? 1;
+              final toPage = int.tryParse(readPageTo.text) ?? fromPage;
+
+              viewModel.updateDailyGoals(
+                readPages: viewModel.dailyReadPages,
+                memorizeAyat: viewModel.dailyMemorizeAyat,
+                readSurah: selectedReadSurah!,
+                memorizeSurah: viewModel.memorizeSurahName,
+                startRead: fromPage,
+                targetRead: toPage,
+              );
+
+              viewModel.updateReadPage(fromPage);
+
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم تحديث ورد القراءة ✅')),
+                const SnackBar(content: Text('✅ تم تحديث ورد القراءة')),
               );
             },
           ),
           const SizedBox(height: 30),
-          _buildSection(
+          _buildTrackingSection(
             title: 'الحفظ',
             surahValue: selectedMemorizeSurah!,
             onSurahChanged: (val) =>
                 setState(() => selectedMemorizeSurah = val),
             surahList: surahNames,
-            numberController: memorizeAyahFrom,
-            numberLabel: 'من الآية',
+            fromController: memorizeAyahFrom,
+            toController: memorizeAyahTo,
+            fromLabel: 'من الآية',
+            toLabel: 'إلى الآية',
             onSave: () {
-              final ayah = int.tryParse(memorizeAyahFrom.text) ?? 1;
-              viewModel.updateMemorizedAyah(ayah);
-              viewModel.updateMemorizeSurah(selectedMemorizeSurah!);
+              final fromAyah = int.tryParse(memorizeAyahFrom.text) ?? 1;
+              final toAyah = int.tryParse(memorizeAyahTo.text) ?? fromAyah;
+
+              viewModel.updateDailyGoals(
+                readPages: viewModel.dailyReadPages,
+                memorizeAyat: viewModel.dailyMemorizeAyat,
+                readSurah: viewModel.readSurahName,
+                memorizeSurah: selectedMemorizeSurah!,
+                startAyah: fromAyah,
+                targetAyah: toAyah,
+              );
+
+              viewModel.updateMemorizedAyah(fromAyah);
+
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم تحديث ورد الحفظ ✅')),
+                const SnackBar(content: Text('✅ تم تحديث ورد الحفظ')),
               );
             },
           ),
@@ -191,17 +221,19 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
-  Widget _buildSection({
+  Widget _buildTrackingSection({
     required String title,
     required String surahValue,
     required ValueChanged<String?> onSurahChanged,
     required List<String> surahList,
-    required TextEditingController numberController,
-    required String numberLabel,
+    required TextEditingController fromController,
+    required TextEditingController toController,
+    required String fromLabel,
+    required String toLabel,
     required VoidCallback onSave,
   }) {
     return Card(
-      elevation: 3,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -212,24 +244,28 @@ class _TrackingScreenState extends State<TrackingScreen> {
               title,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: surahValue,
               items: surahList
-                  .map(
-                    (name) => DropdownMenuItem(value: name, child: Text(name)),
-                  )
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                   .toList(),
               onChanged: onSurahChanged,
               decoration: const InputDecoration(labelText: 'اختر السورة'),
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: numberController,
+              controller: fromController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: numberLabel),
+              decoration: InputDecoration(labelText: fromLabel),
             ),
             const SizedBox(height: 10),
+            TextField(
+              controller: toController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: toLabel),
+            ),
+            const SizedBox(height: 12),
             ElevatedButton(onPressed: onSave, child: const Text('💾 حفظ')),
           ],
         ),

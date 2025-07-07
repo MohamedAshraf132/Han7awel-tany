@@ -3,9 +3,14 @@ import 'package:han7awel_tany/view/screens/QuranTrackingScreen.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/quran_vm.dart';
 
-class QuranWardScreen extends StatelessWidget {
+class QuranWardScreen extends StatefulWidget {
   const QuranWardScreen({super.key});
 
+  @override
+  State<QuranWardScreen> createState() => _QuranWardScreenState();
+}
+
+class _QuranWardScreenState extends State<QuranWardScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<QuranWardViewModel>(context);
@@ -16,45 +21,51 @@ class QuranWardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // عرض الورد الخاص بالقراءة
             _buildProgressSection(
               title: 'قراءة (${viewModel.readSurahName})',
               current: viewModel.currentReadPage,
-              total: 604,
-              progress: viewModel.readProgress,
-              onConfirm: () => viewModel.confirmDailyProgress(read: true),
+              start: viewModel.startReadPage,
+              target: viewModel.targetReadPage,
+              onConfirm: () {
+                viewModel.confirmDailyProgress(read: true);
+                _checkIfFinished(
+                  context,
+                  viewModel.currentReadPage,
+                  viewModel.targetReadPage,
+                  '📘 قراءة',
+                );
+              },
+              onReset: () => viewModel.resetReadProgress(),
               dailyCount: viewModel.dailyReadPages,
               unit: 'صفحة',
             ),
             const SizedBox(height: 20),
-
-            // عرض الورد الخاص بالحفظ
             _buildProgressSection(
               title: 'حفظ (${viewModel.memorizeSurahName})',
               current: viewModel.currentMemorizedAyah,
-              total: 6236,
-              progress: viewModel.memorizeProgress,
-              onConfirm: () => viewModel.confirmDailyProgress(memorize: true),
+              start: viewModel.startMemorizedAyah,
+              target: viewModel.targetMemorizedAyah,
+              onConfirm: () {
+                viewModel.confirmDailyProgress(memorize: true);
+                _checkIfFinished(
+                  context,
+                  viewModel.currentMemorizedAyah,
+                  viewModel.targetMemorizedAyah,
+                  '📖 حفظ',
+                );
+              },
+              onReset: () => viewModel.resetMemorizeProgress(),
               dailyCount: viewModel.dailyMemorizeAyat,
               unit: 'آية',
             ),
             const SizedBox(height: 30),
-
-            // زر تعديل الورد اليومي
             ElevatedButton.icon(
-              onPressed: () => _showEditDialog(context, viewModel),
-              icon: const Icon(Icons.edit),
-              label: const Text('تعديل الورد اليومي'),
-            ),
-            const SizedBox(height: 10),
-
-            // زر تتبع التقدم
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const TrackingScreen()),
                 );
+                setState(() {});
               },
               icon: const Icon(Icons.track_changes),
               label: const Text('تتبع التقدم'),
@@ -68,12 +79,16 @@ class QuranWardScreen extends StatelessWidget {
   Widget _buildProgressSection({
     required String title,
     required int current,
-    required int total,
-    required double progress,
+    required int start,
+    required int target,
     required VoidCallback onConfirm,
+    required VoidCallback onReset,
     required int dailyCount,
     required String unit,
   }) {
+    final int effectiveProgress = current - start;
+    final int effectiveTotal = target - start;
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -87,13 +102,38 @@ class QuranWardScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            LinearProgressIndicator(value: progress),
+            LinearProgressIndicator(
+              value: effectiveTotal <= 0
+                  ? 0
+                  : (effectiveProgress / effectiveTotal).clamp(0.0, 1.0),
+              backgroundColor: Colors.grey[300],
+              color: Colors.teal,
+            ),
             const SizedBox(height: 8),
-            Text('المنجز: $current / $total'),
+            Text('المنجز: $effectiveProgress / $effectiveTotal'),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: onConfirm,
-              child: const Text('✅ تم الإنجاز اليوم'),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                    ),
+                    onPressed: onConfirm,
+                    child: const Text('تم الإنجاز'),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                    ),
+                    onPressed: onReset,
+                    child: const Text('إلغاء'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -101,78 +141,19 @@ class QuranWardScreen extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, QuranWardViewModel viewModel) {
-    final readController = TextEditingController(
-      text: viewModel.dailyReadPages.toString(),
-    );
-    final memorizeController = TextEditingController(
-      text: viewModel.dailyMemorizeAyat.toString(),
-    );
-    final readSurahController = TextEditingController(
-      text: viewModel.readSurahName,
-    );
-    final memorizeSurahController = TextEditingController(
-      text: viewModel.memorizeSurahName,
-    );
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('تعديل الورد اليومي'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: readController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'صفحات القراءة يومياً',
-                ),
-              ),
-              TextField(
-                controller: readSurahController,
-                decoration: const InputDecoration(labelText: 'سورة القراءة'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: memorizeController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'آيات الحفظ يومياً',
-                ),
-              ),
-              TextField(
-                controller: memorizeSurahController,
-                decoration: const InputDecoration(labelText: 'سورة الحفظ'),
-              ),
-            ],
-          ),
+  void _checkIfFinished(
+    BuildContext context,
+    int current,
+    int target,
+    String sectionName,
+  ) {
+    if (current >= target) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 لقد أنهيت ورد $sectionName بالكامل!'),
+          backgroundColor: Colors.green,
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              final read = int.tryParse(readController.text) ?? 1;
-              final memorize = int.tryParse(memorizeController.text) ?? 1;
-              final readSurah = readSurahController.text.trim().isEmpty
-                  ? 'غير محددة'
-                  : readSurahController.text;
-              final memorizeSurah = memorizeSurahController.text.trim().isEmpty
-                  ? 'غير محددة'
-                  : memorizeSurahController.text;
-
-              viewModel.updateDailyGoals(
-                readPages: read,
-                memorizeAyat: memorize,
-                readSurah: readSurah,
-                memorizeSurah: memorizeSurah,
-              );
-              Navigator.pop(context);
-            },
-            child: const Text('حفظ'),
-          ),
-        ],
-      ),
-    );
+      );
+    }
   }
 }

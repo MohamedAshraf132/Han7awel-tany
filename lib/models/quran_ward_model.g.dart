@@ -24,13 +24,17 @@ class QuranWardAdapter extends TypeAdapter<QuranWard> {
       lastUpdated: fields[4] as DateTime,
       readSurahName: fields[5] as String,
       memorizeSurahName: fields[6] as String,
+      startReadPage: fields[7] as int? ?? 1,
+      startMemorizedAyah: fields[8] as int? ?? 1,
+      targetReadPage: fields[9] as int? ?? 604,
+      targetMemorizedAyah: fields[10] as int? ?? 6236,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuranWard obj) {
     writer
-      ..writeByte(7) // ← عدد الحقول الجديدة
+      ..writeByte(11) // ← عدد الحقول الإجمالي
       ..writeByte(0)
       ..write(obj.dailyReadPages)
       ..writeByte(1)
@@ -44,7 +48,15 @@ class QuranWardAdapter extends TypeAdapter<QuranWard> {
       ..writeByte(5)
       ..write(obj.readSurahName)
       ..writeByte(6)
-      ..write(obj.memorizeSurahName);
+      ..write(obj.memorizeSurahName)
+      ..writeByte(7)
+      ..write(obj.startReadPage)
+      ..writeByte(8)
+      ..write(obj.startMemorizedAyah)
+      ..writeByte(9)
+      ..write(obj.targetReadPage)
+      ..writeByte(10)
+      ..write(obj.targetMemorizedAyah);
   }
 
   @override

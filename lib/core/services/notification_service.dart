@@ -29,7 +29,7 @@ class NotificationService {
   }
 
   /// ✅ إشعار عند إتمام ورد اليوم
-  static void showQuranSuccessNotification() {
+  static void showQuranSuccessNotification({required String message}) {
     showSimpleNotification(
       const Text("✅ تم إنجاز ورد اليوم"),
       subtitle: const Text("أحسنت! استمر على طاعة الله 🌸"),

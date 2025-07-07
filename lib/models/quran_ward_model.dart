@@ -25,6 +25,18 @@ class QuranWard extends HiveObject {
   @HiveField(6)
   String memorizeSurahName;
 
+  @HiveField(7)
+  int startReadPage;
+
+  @HiveField(8)
+  int startMemorizedAyah;
+
+  @HiveField(9)
+  int targetReadPage;
+
+  @HiveField(10)
+  int targetMemorizedAyah;
+
   QuranWard({
     required this.dailyReadPages,
     required this.dailyMemorizeAyat,
@@ -32,22 +44,54 @@ class QuranWard extends HiveObject {
     this.currentMemorizedAyah = 1,
     this.readSurahName = "البقرة",
     this.memorizeSurahName = "الناس",
+    this.startReadPage = 1,
+    this.startMemorizedAyah = 1,
+    this.targetReadPage = 604,
+    this.targetMemorizedAyah = 6236,
     DateTime? lastUpdated,
   }) : lastUpdated = lastUpdated ?? DateTime.now();
 
-  double get readProgress => currentReadPage / 604;
-  double get memorizeProgress => currentMemorizedAyah / 6236;
+  /// ✅ التقدم النسبي حسب نقطة البداية والنهاية
+  double get readProgress {
+    int total = targetReadPage - startReadPage;
+    if (total <= 0) return 0;
+    int done = (currentReadPage - startReadPage).clamp(0, total);
+    return done / total;
+  }
 
+  double get memorizeProgress {
+    int total = targetMemorizedAyah - startMemorizedAyah;
+    if (total <= 0) return 0;
+    int done = (currentMemorizedAyah - startMemorizedAyah).clamp(0, total);
+    return done / total;
+  }
+
+  /// ✅ التحديث مع التحقق من عدم تجاوز النهاية
   void updateProgress({bool read = false, bool memorize = false}) {
     if (read) {
       currentReadPage += dailyReadPages;
-      if (currentReadPage > 604) currentReadPage = 604;
+      if (currentReadPage > targetReadPage) {
+        currentReadPage = targetReadPage;
+      }
     }
     if (memorize) {
       currentMemorizedAyah += dailyMemorizeAyat;
-      if (currentMemorizedAyah > 6236) currentMemorizedAyah = 6236;
+      if (currentMemorizedAyah > targetMemorizedAyah) {
+        currentMemorizedAyah = targetMemorizedAyah;
+      }
     }
     lastUpdated = DateTime.now();
+    save();
+  }
+
+  /// ✅ إعادة التعيين إلى نقطة البداية
+  void resetRead() {
+    currentReadPage = startReadPage;
+    save();
+  }
+
+  void resetMemorize() {
+    currentMemorizedAyah = startMemorizedAyah;
     save();
   }
 }
