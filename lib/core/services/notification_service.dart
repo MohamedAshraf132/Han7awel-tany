@@ -4,6 +4,8 @@ import 'package:audioplayers/audioplayers.dart';
 
 class NotificationService {
   static final _player = AudioPlayer();
+
+  /// ⏰ تذكير بقيام الليل
   static void showNightPrayerReminder() {
     showSimpleNotification(
       const Text(
@@ -12,10 +14,31 @@ class NotificationService {
       ),
       subtitle: const Text("لا تنسَ الوقوف بين يدي الله"),
       background: Colors.indigo,
-      duration: Duration(seconds: 6),
+      duration: const Duration(seconds: 6),
     );
   }
 
+  /// 📖 تذكير بورد القرآن اليومي
+  static void showDailyQuranReminder() {
+    showSimpleNotification(
+      const Text("📖 لا تنس وردك اليومي من القرآن"),
+      subtitle: const Text("راجع وردك واقرأ ولو صفحة اليوم ❤️"),
+      background: Colors.deepPurple,
+      duration: const Duration(seconds: 5),
+    );
+  }
+
+  /// ✅ إشعار عند إتمام ورد اليوم
+  static void showQuranSuccessNotification() {
+    showSimpleNotification(
+      const Text("✅ تم إنجاز ورد اليوم"),
+      subtitle: const Text("أحسنت! استمر على طاعة الله 🌸"),
+      background: Colors.green,
+      duration: const Duration(seconds: 4),
+    );
+  }
+
+  /// ⌛ تذكير قبل الصلاة
   static void showReminderBeforePrayer(String title) {
     showSimpleNotification(
       Text(
@@ -28,15 +51,14 @@ class NotificationService {
     );
   }
 
+  /// 🕌 إشعار وقت الصلاة + صوت
   static void showPrayerNotification(String title) async {
     try {
-      // ✅ تشغيل صوت المنبه من الأصول
       await _player.play(AssetSource('assets/sounds/alarm.mp3'));
     } catch (e) {
       debugPrint("حدث خطأ أثناء تشغيل الصوت: $e");
     }
 
-    // ✅ عرض إشعار Overlay
     showSimpleNotification(
       Text(
         "🕌 حان الآن وقت $title",

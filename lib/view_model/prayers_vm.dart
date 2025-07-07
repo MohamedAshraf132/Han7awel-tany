@@ -5,7 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:han7awel_tany/core/services/location_service.dart';
 import 'package:han7awel_tany/core/services/notification_service.dart';
 import 'package:intl/intl.dart';
-import '../data/models/prayer_model.dart';
+import '../models/prayer_model.dart';
 
 class PrayersViewModel extends ChangeNotifier {
   List<PrayerModel> prayers = [];
