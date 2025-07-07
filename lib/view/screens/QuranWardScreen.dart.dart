@@ -16,7 +16,14 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
     final viewModel = Provider.of<QuranWardViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ورد القرآن'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          'ورد القرآن',
+          style: TextStyle(color: Colors.white, fontSize: 22),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.teal,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -51,15 +58,19 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
                   context,
                   viewModel.currentMemorizedAyah,
                   viewModel.targetMemorizedAyah,
-                  '📖 حفظ',
+                  'حفظ',
                 );
               },
               onReset: () => viewModel.resetMemorizeProgress(),
               dailyCount: viewModel.dailyMemorizeAyat,
               unit: 'آية',
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 70),
             ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade400,
+                minimumSize: Size(180, 50),
+              ),
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -67,8 +78,10 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
                 );
                 setState(() {});
               },
-              icon: const Icon(Icons.track_changes),
-              label: const Text('تتبع التقدم'),
+              label: const Text(
+                'تتبع التقدم',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
             ),
           ],
         ),
@@ -97,10 +110,7 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '$title ($unit يومي: $dailyCount)',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 10),
             LinearProgressIndicator(
               value: effectiveTotal <= 0
@@ -117,20 +127,26 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.teal.shade400,
                     ),
                     onPressed: onConfirm,
-                    child: const Text('تم الإنجاز'),
+                    child: const Text(
+                      'تم الإنجاز',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.teal.shade400,
                     ),
                     onPressed: onReset,
-                    child: const Text('إلغاء'),
+                    child: const Text(
+                      'إلغاء',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -150,7 +166,7 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
     if (current >= target) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🎉 لقد أنهيت ورد $sectionName بالكامل!'),
+          content: Text('لقد أنهيت ورد $sectionName بالكامل!'),
           backgroundColor: Colors.green,
         ),
       );

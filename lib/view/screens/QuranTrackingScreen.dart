@@ -152,7 +152,26 @@ class _TrackingScreenState extends State<TrackingScreen> {
     memorizeAyahTo.text = viewModel.targetMemorizedAyah.toString();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('تتبع التقدم'), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: Colors.teal.shade700,
+        elevation: 5,
+        centerTitle: true,
+        shadowColor: Colors.black,
+        title: const Text(
+          'تتبع التقدم',
+          style: TextStyle(fontSize: 22, letterSpacing: 1, color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          tooltip: 'رجوع',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -240,10 +259,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: surahValue,
@@ -266,7 +282,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
               decoration: InputDecoration(labelText: toLabel),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: onSave, child: const Text('💾 حفظ')),
+            ElevatedButton(
+              onPressed: onSave,
+              child: const Text(
+                'حفظ',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade400,
+              ),
+            ),
           ],
         ),
       ),
