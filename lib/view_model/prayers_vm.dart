@@ -9,7 +9,6 @@ import '../data/models/prayer_model.dart';
 
 class PrayersViewModel extends ChangeNotifier {
   List<PrayerModel> prayers = [];
-  DateTime? _lastFetchedDate;
 
   final Box _prayersBox = Hive.box('prayers');
 
@@ -20,54 +19,74 @@ class PrayersViewModel extends ChangeNotifier {
   /// تحميل مواقيت الصلاة لليوم الحالي فقط
   Future<void> fetchPrayerTimes() async {
     final today = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(today);
 
-    if (_lastFetchedDate != null &&
-        _lastFetchedDate!.year == today.year &&
-        _lastFetchedDate!.month == today.month &&
-        _lastFetchedDate!.day == today.day) {
-      return; // تم التحميل مسبقًا اليوم
+    // ✅ حاول تحميل المواعيد من Hive أولاً
+    final savedTimes = _prayersBox.get('times_$formattedDate');
+    if (savedTimes != null) {
+      prayers = (savedTimes as List).map((item) {
+        final map = Map<String, dynamic>.from(item);
+        return PrayerModel(
+          name: map['name'],
+          time: DateTime.parse(map['time']),
+          isPrayed: _getPrayerStatus(map['name'], today),
+        );
+      }).toList();
+
+      notifyListeners();
+      _scheduleOverlayNotifications();
+      return;
     }
 
-    _lastFetchedDate = today;
+    // ✅ لو مفيش بيانات محفوظة، احسب المواعيد
+    try {
+      final position = await LocationService.getCurrentLocation();
+      final myCoordinates = position != null
+          ? Coordinates(position.latitude, position.longitude)
+          : Coordinates(30.0444, 31.2357); // fallback Cairo
 
-    final position = await LocationService.getCurrentLocation();
-    final myCoordinates = position != null
-        ? Coordinates(position.latitude, position.longitude)
-        : Coordinates(30.0444, 31.2357); // fallback Cairo
+      final params = CalculationMethod.egyptian.getParameters();
+      final prayerTimes = PrayerTimes.today(myCoordinates, params);
 
-    final params = CalculationMethod.egyptian.getParameters();
-    final prayerTimes = PrayerTimes.today(myCoordinates, params);
+      prayers = [
+        PrayerModel(
+          name: 'الفجر',
+          time: prayerTimes.fajr,
+          isPrayed: _getPrayerStatus('الفجر', today),
+        ),
+        PrayerModel(
+          name: 'الظهر',
+          time: prayerTimes.dhuhr,
+          isPrayed: _getPrayerStatus('الظهر', today),
+        ),
+        PrayerModel(
+          name: 'العصر',
+          time: prayerTimes.asr,
+          isPrayed: _getPrayerStatus('العصر', today),
+        ),
+        PrayerModel(
+          name: 'المغرب',
+          time: prayerTimes.maghrib,
+          isPrayed: _getPrayerStatus('المغرب', today),
+        ),
+        PrayerModel(
+          name: 'العشاء',
+          time: prayerTimes.isha,
+          isPrayed: _getPrayerStatus('العشاء', today),
+        ),
+      ];
 
-    prayers = [
-      PrayerModel(
-        name: 'الفجر',
-        time: prayerTimes.fajr,
-        isPrayed: _getPrayerStatus('الفجر', today),
-      ),
-      PrayerModel(
-        name: 'الظهر',
-        time: prayerTimes.dhuhr,
-        isPrayed: _getPrayerStatus('الظهر', today),
-      ),
-      PrayerModel(
-        name: 'العصر',
-        time: prayerTimes.asr,
-        isPrayed: _getPrayerStatus('العصر', today),
-      ),
-      PrayerModel(
-        name: 'المغرب',
-        time: prayerTimes.maghrib,
-        isPrayed: _getPrayerStatus('المغرب', today),
-      ),
-      PrayerModel(
-        name: 'العشاء',
-        time: prayerTimes.isha,
-        isPrayed: _getPrayerStatus('العشاء', today),
-      ),
-    ];
+      // ✅ حفظها في Hive للتشغيل بدون نت لاحقًا
+      final timesToSave = prayers
+          .map((p) => {'name': p.name, 'time': p.time.toIso8601String()})
+          .toList();
+      _prayersBox.put('times_$formattedDate', timesToSave);
 
-    notifyListeners();
-    _scheduleOverlayNotifications();
+      notifyListeners();
+      _scheduleOverlayNotifications();
+    } catch (e) {
+      print('❌ فشل في حساب مواقيت الصلاة: $e');
+    }
   }
 
   /// تأكيد الصلاة
