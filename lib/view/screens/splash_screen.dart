@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initApp() async {
-    await Future.delayed(const Duration(seconds: 2)); // وقت العرض
+    await Future.delayed(const Duration(seconds: 4)); // وقت العرض
     await PermissionService.requestAllPermissions(context);
 
     // بعد إتمام الصلاحيات، انتقل للصفحة الرئيسية
@@ -29,19 +29,26 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
+      backgroundColor: Colors.teal, // لون الخلفية
+      body: const Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.access_alarm, size: 100, color: Colors.blue),
-            SizedBox(height: 20),
-            Text(
-              'تنظيم العبادات',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.bolt, // أيقونة القوة ⚡
+              size: 60,
+              color: Colors.white,
             ),
-            SizedBox(height: 10),
-            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text(
+              'هنحاول تاني',
+              style: TextStyle(
+                fontSize: 28,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
           ],
         ),
       ),

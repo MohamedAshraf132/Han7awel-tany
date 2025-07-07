@@ -24,9 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // ✅ خلفية ممتدة خلف AppBar
+      extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: const Size.fromHeight(60),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -34,56 +34,78 @@ class _HomeScreenState extends State<HomeScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
-                blurRadius: 8,
+                blurRadius: 40,
                 offset: Offset(0, 3),
               ),
             ],
           ),
           child: SafeArea(
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  //shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.nightlight_round, // 🌙 رمز خفيف
-                  color: Colors.white,
-                  size: 32,
-                ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Center(
+                child: Icon(Icons.bolt, color: Colors.white, size: 28),
               ),
             ),
           ),
         ),
       ),
       body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.teal,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        elevation: 8,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'الصلوات',
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'القرآن'),
-          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'الأعمال'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'الإعدادات',
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-        ],
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            currentIndex: _currentIndex,
+            selectedItemColor: Colors.teal,
+            unselectedItemColor: Colors.grey.shade500,
+            selectedFontSize: 13,
+            unselectedFontSize: 12,
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.access_time),
+                label: 'الصلوات',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.menu_book),
+                label: 'القرآن',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.task), label: 'الأعمال'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'الإعدادات',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
