@@ -9,19 +9,16 @@ import '../data/models/prayer_model.dart';
 
 class PrayersViewModel extends ChangeNotifier {
   List<PrayerModel> prayers = [];
-
   final Box _prayersBox = Hive.box('prayers');
 
   PrayersViewModel() {
     fetchPrayerTimes();
   }
 
-  /// تحميل مواقيت الصلاة لليوم الحالي فقط
   Future<void> fetchPrayerTimes() async {
     final today = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(today);
 
-    // ✅ حاول تحميل المواعيد من Hive أولاً
     final savedTimes = _prayersBox.get('times_$formattedDate');
     if (savedTimes != null) {
       prayers = (savedTimes as List).map((item) {
@@ -35,10 +32,10 @@ class PrayersViewModel extends ChangeNotifier {
 
       notifyListeners();
       _scheduleOverlayNotifications();
+      _scheduleQiyamNotification();
       return;
     }
 
-    // ✅ لو مفيش بيانات محفوظة، احسب المواعيد
     try {
       final position = await LocationService.getCurrentLocation();
       final myCoordinates = position != null
@@ -76,7 +73,6 @@ class PrayersViewModel extends ChangeNotifier {
         ),
       ];
 
-      // ✅ حفظها في Hive للتشغيل بدون نت لاحقًا
       final timesToSave = prayers
           .map((p) => {'name': p.name, 'time': p.time.toIso8601String()})
           .toList();
@@ -84,12 +80,12 @@ class PrayersViewModel extends ChangeNotifier {
 
       notifyListeners();
       _scheduleOverlayNotifications();
+      _scheduleQiyamNotification();
     } catch (e) {
       print('❌ فشل في حساب مواقيت الصلاة: $e');
     }
   }
 
-  /// تأكيد الصلاة
   void markAsPrayed(int index) {
     prayers[index].isPrayed = true;
     final key = _getPrayerKey(prayers[index].name, DateTime.now());
@@ -97,7 +93,6 @@ class PrayersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// إلغاء التأكيد
   void unmarkAsPrayed(int index) {
     prayers[index].isPrayed = false;
     final key = _getPrayerKey(prayers[index].name, DateTime.now());
@@ -105,42 +100,58 @@ class PrayersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// هل هذه الصلاة مؤداة بالفعل؟
   bool _getPrayerStatus(String prayerName, DateTime date) {
     final key = _getPrayerKey(prayerName, date);
     return _prayersBox.get(key, defaultValue: false);
   }
 
-  /// توليد مفتاح مميز لكل صلاة وتاريخها
   String _getPrayerKey(String prayerName, DateTime date) {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
     return '$formattedDate-$prayerName';
   }
 
-  /// جدولة الإشعارات لكل صلاة لم تحن بعد
   void _scheduleOverlayNotifications() {
+    final now = DateTime.now();
     for (var prayer in prayers) {
-      final duration = prayer.time.difference(DateTime.now());
-      if (duration.inSeconds > 0) {
-        Timer(duration, () {
+      final timeUntilPrayer = prayer.time.difference(now);
+
+      // ⏰ إشعار قبل الصلاة بدقيقة
+      final before = prayer.time.subtract(const Duration(minutes: 1));
+      if (before.isAfter(now)) {
+        Timer(before.difference(now), () {
+          NotificationService.showReminderBeforePrayer(prayer.name);
+        });
+      }
+
+      // 🕌 إشعار وقت الصلاة
+      if (timeUntilPrayer.inSeconds > 0) {
+        Timer(timeUntilPrayer, () {
           NotificationService.showPrayerNotification(prayer.name);
         });
       }
     }
   }
 
-  /// تنسيق الوقت للعرض
+  void _scheduleQiyamNotification() {
+    final now = DateTime.now();
+    final tonight = DateTime(now.year, now.month, now.day, 2, 0); // 2:00 AM
+
+    final target = tonight.isAfter(now)
+        ? tonight
+        : tonight.add(const Duration(days: 1)); // لليوم التالي
+
+    Timer(target.difference(now), () {
+      NotificationService.showNightPrayerReminder();
+    });
+  }
+
   String formatTime(DateTime time) {
     return DateFormat('hh:mm a').format(time);
   }
 
-  /// ✅ عدد الصلوات المؤداة
   int get prayedCount => prayers.where((p) => p.isPrayed).length;
-
-  /// ✅ عدد الصلوات الكلي
   int get totalPrayers => prayers.length;
 
-  /// ✅ الوقت المتبقي حتى الصلاة القادمة (إن وُجدت)
   Duration? get nextPrayerCountdown {
     final now = DateTime.now();
     final upcoming = prayers.firstWhere(
@@ -151,7 +162,6 @@ class PrayersViewModel extends ChangeNotifier {
     return upcoming.name.isEmpty ? null : upcoming.time.difference(now);
   }
 
-  /// ✅ اسم الصلاة القادمة
   String? get nextPrayerName {
     final now = DateTime.now();
     final upcoming = prayers.firstWhere(
