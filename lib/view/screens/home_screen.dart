@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:han7awel_tany/view/screens/SettingsScreen.dart';
 import 'package:han7awel_tany/view/screens/prayers_screens.dart';
-import 'package:han7awel_tany/view_model/settings_vm.dart';
 import 'package:han7awel_tany/view_model/tasks_vm.dart';
 
 import 'QuranWardScreen.dart.dart';
