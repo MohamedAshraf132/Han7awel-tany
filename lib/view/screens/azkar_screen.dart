@@ -45,53 +45,58 @@ class _AzkarScreenState extends State<AzkarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'الأذكار',
-          style: TextStyle(color: Colors.white, fontSize: 22),
+    return Directionality(
+      // ✅ أضفنا هذا السطر
+      textDirection: TextDirection.rtl, // ✅ لجعل النصوص من اليمين
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'الأذكار',
+            style: TextStyle(color: Colors.white, fontSize: 22),
+          ),
+          backgroundColor: Colors.teal,
+          centerTitle: true,
         ),
-        backgroundColor: Colors.teal,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: 'ابحث عن الأذكار',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'ابحث عن الأذكار',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: filteredCategories.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: filteredCategories.length,
-                    separatorBuilder: (_, __) => const Divider(),
-                    itemBuilder: (context, index) {
-                      final category = filteredCategories[index];
-                      return ListTile(
-                        title: Text(category.title),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  AzkarDetailsScreen(category: category),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
+            Expanded(
+              child: filteredCategories.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: filteredCategories.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (context, index) {
+                        final category = filteredCategories[index];
+                        return ListTile(
+                          title: Text(category.title),
+                          trailing: const Icon(Icons.arrow_forward_ios),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    AzkarDetailsScreen(category: category),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

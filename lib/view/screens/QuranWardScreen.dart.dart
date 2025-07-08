@@ -1,3 +1,4 @@
+// ملف: quran_ward_screen.dart
 import 'package:flutter/material.dart';
 import 'package:han7awel_tany/view/screens/QuranTrackingScreen.dart';
 import 'package:provider/provider.dart';
@@ -15,75 +16,79 @@ class _QuranWardScreenState extends State<QuranWardScreen> {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<QuranWardViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'ورد القرآن',
-          style: TextStyle(color: Colors.white, fontSize: 22),
+    return Directionality(
+      textDirection: TextDirection.rtl, // 👈 لجعل المحتوى من اليمين لليسار
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'ورد القرآن',
+            style: TextStyle(color: Colors.white, fontSize: 22),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.teal,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildProgressSection(
-              title: 'قراءة (${viewModel.readSurahName})',
-              current: viewModel.currentReadPage,
-              start: viewModel.startReadPage,
-              target: viewModel.targetReadPage,
-              onConfirm: () {
-                viewModel.confirmDailyProgress(read: true);
-                _checkIfFinished(
-                  context,
-                  viewModel.currentReadPage,
-                  viewModel.targetReadPage,
-                  '📘 قراءة',
-                );
-              },
-              onReset: () => viewModel.resetReadProgress(),
-              dailyCount: viewModel.dailyReadPages,
-              unit: 'صفحة',
-            ),
-            const SizedBox(height: 20),
-            _buildProgressSection(
-              title: 'حفظ (${viewModel.memorizeSurahName})',
-              current: viewModel.currentMemorizedAyah,
-              start: viewModel.startMemorizedAyah,
-              target: viewModel.targetMemorizedAyah,
-              onConfirm: () {
-                viewModel.confirmDailyProgress(memorize: true);
-                _checkIfFinished(
-                  context,
-                  viewModel.currentMemorizedAyah,
-                  viewModel.targetMemorizedAyah,
-                  'حفظ',
-                );
-              },
-              onReset: () => viewModel.resetMemorizeProgress(),
-              dailyCount: viewModel.dailyMemorizeAyat,
-              unit: 'آية',
-            ),
-            const SizedBox(height: 70),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal.shade400,
-                minimumSize: Size(180, 50),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildProgressSection(
+                title: 'قراءة (${viewModel.readSurahName})',
+                current: viewModel.currentReadPage,
+                start: viewModel.startReadPage,
+                target: viewModel.targetReadPage,
+                onConfirm: () {
+                  viewModel.confirmDailyProgress(read: true);
+                  _checkIfFinished(
+                    context,
+                    viewModel.currentReadPage,
+                    viewModel.targetReadPage,
+                    '📘 قراءة',
+                  );
+                },
+                onReset: () => viewModel.resetReadProgress(),
+                dailyCount: viewModel.dailyReadPages,
+                unit: 'صفحة',
               ),
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const TrackingScreen()),
-                );
-                setState(() {});
-              },
-              label: const Text(
-                'تتبع التقدم',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+              const SizedBox(height: 20),
+              _buildProgressSection(
+                title: 'حفظ (${viewModel.memorizeSurahName})',
+                current: viewModel.currentMemorizedAyah,
+                start: viewModel.startMemorizedAyah,
+                target: viewModel.targetMemorizedAyah,
+                onConfirm: () {
+                  viewModel.confirmDailyProgress(memorize: true);
+                  _checkIfFinished(
+                    context,
+                    viewModel.currentMemorizedAyah,
+                    viewModel.targetMemorizedAyah,
+                    'حفظ',
+                  );
+                },
+                onReset: () => viewModel.resetMemorizeProgress(),
+                dailyCount: viewModel.dailyMemorizeAyat,
+                unit: 'آية',
               ),
-            ),
-          ],
+              const SizedBox(height: 70),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade400,
+                  minimumSize: const Size(180, 50),
+                ),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TrackingScreen()),
+                  );
+                  setState(() {});
+                },
+                icon: const Icon(Icons.track_changes, color: Colors.white),
+                label: const Text(
+                  'تتبع التقدم',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
