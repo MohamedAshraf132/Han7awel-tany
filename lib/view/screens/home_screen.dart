@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:han7awel_tany/view/screens/Hssn/HsnElmuslum.dart';
 import 'package:han7awel_tany/view/screens/Prayers/prayers_screens.dart';
-import 'package:han7awel_tany/view_model/tasks_vm.dart';
+import 'package:han7awel_tany/view/screens/TasksScreen.dart';
 
 import 'Quran/QuranWardScreen.dart.dart';
 
@@ -26,34 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.teal, Color(0xFF26A69A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 40,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Center(
-                child: Icon(Icons.bolt, color: Colors.white, size: 28),
-              ),
-            ),
-          ),
-        ),
-      ),
+
       body: _screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

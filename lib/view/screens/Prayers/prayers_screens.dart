@@ -37,9 +37,12 @@ class _PrayersScreenState extends State<PrayersScreen> {
             child: Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.teal,
-                title: const Text(
-                  'إِنَّ الصّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                title: Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: const Text(
+                    'إِنَّ الصّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
                 centerTitle: true,
                 elevation: 4,

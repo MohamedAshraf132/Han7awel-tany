@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:provider/provider.dart'; // ✅ أضف هذا
-import 'package:han7awel_tany/view/screens/splash_screen.dart';
-import 'view_model/quran_vm.dart'; // ✅ أضف هذا
+import 'package:provider/provider.dart';
+
+import 'view_model/quran_vm.dart';
 import 'models/quran_ward_model.dart';
+import 'view/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +14,10 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(QuranWardAdapter());
+
   await Hive.openBox('prayers');
   await Hive.openBox<QuranWard>('quran_ward_box');
+  await Hive.openBox('courses'); // ✅ استخدم هذا بدل coursesBox
 
   await initializeDateFormatting('ar', null);
 
@@ -22,9 +25,7 @@ void main() async {
     OverlaySupport.global(
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-            create: (_) => QuranWardViewModel(),
-          ), // ✅ أضف هذا
+          ChangeNotifierProvider(create: (_) => QuranWardViewModel()),
         ],
         child: const MyApp(),
       ),

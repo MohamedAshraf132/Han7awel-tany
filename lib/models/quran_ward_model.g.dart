@@ -21,20 +21,20 @@ class QuranWardAdapter extends TypeAdapter<QuranWard> {
       dailyMemorizeAyat: fields[1] as int,
       currentReadPage: fields[2] as int,
       currentMemorizedAyah: fields[3] as int,
-      lastUpdated: fields[4] as DateTime,
       readSurahName: fields[5] as String,
       memorizeSurahName: fields[6] as String,
-      startReadPage: fields[7] as int? ?? 1,
-      startMemorizedAyah: fields[8] as int? ?? 1,
-      targetReadPage: fields[9] as int? ?? 604,
-      targetMemorizedAyah: fields[10] as int? ?? 6236,
+      startReadPage: fields[7] as int,
+      startMemorizedAyah: fields[8] as int,
+      targetReadPage: fields[9] as int,
+      targetMemorizedAyah: fields[10] as int,
+      lastUpdated: fields[4] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuranWard obj) {
     writer
-      ..writeByte(11) // ← عدد الحقول الإجمالي
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.dailyReadPages)
       ..writeByte(1)
