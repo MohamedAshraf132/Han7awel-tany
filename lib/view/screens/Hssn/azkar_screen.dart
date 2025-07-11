@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:han7awel_tany/core/services/load_azkar.dart';
 import 'package:han7awel_tany/models/azkar_model.dart';
-import 'package:han7awel_tany/view/screens/zikr_details_screen.dart';
+import 'package:han7awel_tany/view/screens/Hssn/zikr_details_screen.dart';
 
 class AzkarScreen extends StatefulWidget {
   const AzkarScreen({super.key});

@@ -1,8 +1,8 @@
 // ملف: quran_ward_screen.dart
 import 'package:flutter/material.dart';
-import 'package:han7awel_tany/view/screens/QuranTrackingScreen.dart';
+import 'package:han7awel_tany/view/screens/Quran/QuranTrackingScreen.dart';
 import 'package:provider/provider.dart';
-import '../../view_model/quran_vm.dart';
+import '../../../view_model/quran_vm.dart';
 
 class QuranWardScreen extends StatefulWidget {
   const QuranWardScreen({super.key});

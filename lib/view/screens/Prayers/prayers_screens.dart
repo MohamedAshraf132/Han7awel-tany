@@ -1,9 +1,9 @@
 // ملف: prayers_screen.dart
 import 'package:flutter/material.dart';
-import 'package:han7awel_tany/view/screens/NightPrayersScreen.dart';
+import 'package:han7awel_tany/view/screens/Prayers/NightPrayersScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../../../view_model/prayers_vm.dart';
+import '../../../../view_model/prayers_vm.dart';
 
 class PrayersScreen extends StatefulWidget {
   const PrayersScreen({super.key});

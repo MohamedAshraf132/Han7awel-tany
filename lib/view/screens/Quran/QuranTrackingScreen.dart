@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_model/quran_vm.dart';
+import '../../../view_model/quran_vm.dart';
 
 class TrackingScreen extends StatefulWidget {
   const TrackingScreen({super.key});

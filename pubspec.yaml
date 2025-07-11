@@ -48,6 +48,7 @@ dependencies:
   audioplayers: ^5.2.1
   fl_chart: ^1.0.0
   awesome_dialog: ^3.0.1
+  just_audio: ^0.9.33
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,9 @@ flutter:
     - assets/sounds/alarm.mp3
     - assets/hisn.json
     - assets/40-hadith-nawawi.json
+    - assets/azkar_massa.json
+    - assets/azkar_sbaah.json
+    - assets/PostPrayer_azkar.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

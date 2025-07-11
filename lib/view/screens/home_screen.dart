@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:han7awel_tany/view/screens/SettingsScreen.dart';
-import 'package:han7awel_tany/view/screens/prayers_screens.dart';
+import 'package:han7awel_tany/view/screens/Hssn/HsnElmuslum.dart';
+import 'package:han7awel_tany/view/screens/Prayers/prayers_screens.dart';
 import 'package:han7awel_tany/view_model/tasks_vm.dart';
 
-import 'QuranWardScreen.dart.dart';
+import 'Quran/QuranWardScreen.dart.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     PrayersScreen(),
     QuranWardScreen(),
     TasksScreen(),
-    SettingsScreen(),
+    Hsnelmuslum(),
   ];
 
   @override
@@ -100,10 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'القرآن',
               ),
               BottomNavigationBarItem(icon: Icon(Icons.task), label: 'الأعمال'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'الإعدادات',
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.book), label: 'حصن'),
             ],
           ),
         ),

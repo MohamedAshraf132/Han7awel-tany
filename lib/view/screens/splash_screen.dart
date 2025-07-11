@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initApp() async {
-    await Future.delayed(const Duration(seconds: 4)); // وقت العرض
+    await Future.delayed(const Duration(seconds: 2)); // وقت العرض
     await PermissionService.requestAllPermissions(context);
 
     // بعد إتمام الصلاحيات، انتقل للصفحة الرئيسية
